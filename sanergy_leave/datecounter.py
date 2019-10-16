@@ -13,4 +13,11 @@ def daysHoursMinutesSecondsFromSeconds(seconds):
 leaving_date = datetime.strptime('2019-10-16', '%Y-%m-%d')
 now = datetime.strptime('2019-10-15', '%Y-%m-%d')
 
+
+def total_days(arr):
+	days=[]
+	for leave in arr:
+		days.append(leave.Requested_Days)
+	return sum(days)
+
 print ("%d days" % daysHoursMinutesSecondsFromSeconds(dateDiffInSeconds(now, leaving_date)))

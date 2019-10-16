@@ -12,10 +12,10 @@ from django.urls import reverse, reverse_lazy
 
 from users.models import Profile
 
-from .datecounter import dateDiffInSeconds, daysHoursMinutesSecondsFromSeconds
+from .datecounter import dateDiffInSeconds, daysHoursMinutesSecondsFromSeconds,total_days
 from .email import *
 from .forms import AddEmployeeForm, LeaveForm
-from .models import Leave
+from .models import Leave, LeaveType
 
 # Create your views here.
 
@@ -85,15 +85,38 @@ def apply_leave(request):
                 start_date = form.cleaned_data['Begin_Date']
                 end_date = form.cleaned_data['End_Date']
 
+
+
+                # <class 'sanergy_leave.models.LeaveType'>
+                # leave_type = form.cleaned_data['Leave_Type']
+                # print(type(leave_type.Leave_Types),'tpreeeeeeeeeeeeeeeee')
+                # leave_name = LeaveType.objects.filter(Leave_Types=leave_type.Leave_Types).first()
+                # current_user_leaves=Leave.objects.filter(user=current_user).filter(Leave_Type__Leave_Types=leave_name.Leave_Types)
+                # days=[]
                 requested_days = daysHoursMinutesSecondsFromSeconds(dateDiffInSeconds(start_date, end_date))
-                leave.Requested_Days=requested_days
+
+
+
+                # for leave in current_user_leaves:
+                #     days.append(leave.Requested_Days)
+
+                # total=sum(days)+int(requested_days)   
+                # print(type(leave_name),current_user_leaves,days,total,requested_days,'totaaaaaaaaaaaaaaaaaaaaaal') 
+
+                # if total>leave_name.leave_limit:
+                #     messages.warning(request,f'You have exceed your {leave_name.Leave_Types} limit')
+                #     return redirect('apply_leave')
+
+
+
+                leave.Requested_Days = requested_days
 
                 name = current_user.username
                 superusers = User.objects.filter(is_superuser=True)
-                managers = User.objects.filter(is_staff=True)
+                # managers = User.objects.filter(is_staff=True)
 
                 # notifying Management about leave appplication
-                
+
                 for user in superusers:
                     leave_request_sent(name,user.email)
                 # for user in managers:
@@ -103,7 +126,8 @@ def apply_leave(request):
 
                 leave.save()
 
-                return redirect('table')
+                return redirect('table')    
+            
 
         else:
             form = LeaveForm()
@@ -116,7 +140,6 @@ def table (request):
     current_user = request.user
     leaves = Leave.objects.filter(user = current_user)
     return render(request, 'sanergytemplates/table.html',{ "leavess": leaves})
-
 
 @staff_member_required
 def hrsite(request):

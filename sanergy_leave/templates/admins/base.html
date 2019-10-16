@@ -32,9 +32,31 @@
 
 <body>
     {% include "admins/navbar.html" %}
+    <div class="container">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <!-- flash messages -->
+                    {% if  messages %}
+                    {% for mssg in messages  %}
+                    <div class="alert alert-{{mssg.tags}}">
+                        {{mssg}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <!-- end flash messages -->
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+
     {% block content %}
     
-    {% endblock %}
+    {% endblock content %}
+
     {% block scripts %}
 
     <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
