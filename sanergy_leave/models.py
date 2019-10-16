@@ -19,18 +19,11 @@ class EmploymentTerm(models.Model):
     return self.Employment_Terms
 
 class LeaveType(models.Model):
-  LEAVE_CHOICES = (
-    ('MATERNITY_LEAVE', 'MATERNITY_LEAVE'),
-    ('PATERNITY_LEAVE','PATERNITY_LEAVE'),
-    ('ANNUAL_LEAVE','ANNUAL_LEAVE'),
-    ('COMPASSIONATE_LEAVE','COMPASSIONATE_LEAVE'),
-    ('SICK_LEAVE','SICK_LEAVE'),
-    ('STUDY_LEAVE', 'STUDY_LEAVE'),
-    )
-  Leave_Types = models.CharField(max_length=20, choices=LEAVE_CHOICES, default='ANNUAL_LEAVE')
+  Leave_Types = models.CharField(max_length=40)
+  leave_limit = models.PositiveIntegerField(default=0)
 
   def __str__(self):
-    return self.Leave_Types
+    return self.Leave_Types + " allowed limit " + str(self.leave_limit)
 
 
 class Department(models.Model):

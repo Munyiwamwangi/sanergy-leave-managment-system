@@ -88,7 +88,7 @@ GOOGLE_OAUTH2_CLIENT_SECRETS_JSON = 'client_secrets.json'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME':'sanergy',
+        'NAME':'sql',
         'USER':'moringa',
         'PASSWORD':'joe',
     }

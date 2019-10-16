@@ -93,12 +93,13 @@ def apply_leave(request):
                 managers = User.objects.filter(is_staff=True)
 
                 # notifying Management about leave appplication
+                
                 for user in superusers:
                     leave_request_sent(name,user.email)
-                for user in managers:
-                    if user.profile.department.department_name == current_user.profile.department.department_name:
-                        name = user.username
-                        leave_request_sent(name,user.email)
+                # for user in managers:
+                #     if user.profile.department.department_name == current_user.profile.department.department_name:
+                #         name = user.username
+                #         leave_request_sent(name,user.email)
 
                 leave.save()
 
