@@ -6,15 +6,6 @@ from django.db import transaction
 from .models import Leave, Notice
 from users.models import Profile
 
-leave_choices = [
-    
-    ('annual leave','Annual leave'),
-    ('compassion leave','Compassion leave'),
-    ('maternity leave','Maternity leave'),
-    ('Paternity leave', 'Paternity leave'),
-    ('study leave', 'Study leave'),
-  ]
-
 class LeaveForm(forms.ModelForm):
 
     class Meta:
@@ -24,7 +15,6 @@ class LeaveForm(forms.ModelForm):
                'datetime-input'}),
             'End_Date':forms.DateTimeInput(attrs={ 'class':
                'datetime-input'}),
-            'Leave_Type':forms.Select(choices=leave_choices)
         }
 
         exclude=['empLeave_req_id','emp_id','emp_fullname','user','leave_status','leave_issuer','Requested_Days','leave_balance']

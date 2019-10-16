@@ -23,7 +23,7 @@ class LeaveType(models.Model):
   leave_limit = models.PositiveIntegerField(default=0)
 
   def __str__(self):
-    return self.Leave_Types + " allowed limit " + str(self.leave_limit)
+    return self.Leave_Types + " allowed limit " + str(self.leave_limit) +' days'
 
 
 class Department(models.Model):
@@ -98,4 +98,3 @@ class Notice(models.Model):
     def get_single_user_notice(cls,owner):
         user_notices=cls.objects.filter(owner=owner).all()
         return user_notices
-
