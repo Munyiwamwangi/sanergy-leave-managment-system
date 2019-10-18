@@ -13,18 +13,17 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path,include
-import sanergy_leave.urls
-from django.contrib.auth import views as auth_views
-from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
-from users import views as user_views
-from django.conf import settings
-from django.contrib.auth.views import LogoutView
-from django.conf.urls import url
 
+from django.conf import settings
+from django.conf.urls import url
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.views import LogoutView
+from django.urls import include, path
+
+import sanergy_leave.urls
+from users import views as user_views
 
 urlpatterns = [
     path('',include (sanergy_leave.urls)),
@@ -35,5 +34,6 @@ urlpatterns = [
     path('', include('social_django.urls', namespace='social')),
     path('logout/', LogoutView.as_view(), {'next_page': settings.LOGOUT_REDIRECT_URL}, name='logout'),
 ]
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

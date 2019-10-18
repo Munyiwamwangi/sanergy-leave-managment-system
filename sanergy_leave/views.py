@@ -93,6 +93,8 @@ def apply_leave(request):
                 # leave_name = LeaveType.objects.filter(Leave_Types=leave_type.Leave_Types).first()
                 # current_user_leaves=Leave.objects.filter(user=current_user).filter(Leave_Type__Leave_Types=leave_name.Leave_Types)
                 # days=[]
+
+
                 requested_days = daysHoursMinutesSecondsFromSeconds(dateDiffInSeconds(start_date, end_date))
 
 
@@ -100,7 +102,7 @@ def apply_leave(request):
                 # for leave in current_user_leaves:
                 #     days.append(leave.Requested_Days)
 
-                # total=sum(days)+int(requested_days)   
+                # total=sum(days)+int(requested_days)
                 # print(type(leave_name),current_user_leaves,days,total,requested_days,'totaaaaaaaaaaaaaaaaaaaaaal') 
 
                 # if total>leave_name.leave_limit:
@@ -113,16 +115,17 @@ def apply_leave(request):
 
                 name = current_user.username
                 superusers = User.objects.filter(is_superuser=True)
-                # managers = User.objects.filter(is_staff=True)
+                managers = User.objects.filter(is_staff=True).filter(is_superuser=False)
+                print(managers, 'manageeeeeeeeeeeeeeeeeeeeeeeeeeers')
 
-                # notifying Management about leave appplication
 
                 for user in superusers:
                     leave_request_sent(name,user.email)
-                # for user in managers:
-                #     if user.profile.department.department_name == current_user.profile.department.department_name:
-                #         name = user.username
-                #         leave_request_sent(name,user.email)
+                for user in managers:
+                    if user.profile.department.department_name == current_user.profile.department.department_name:
+                        name = user.username
+                        leave_request_sent(name,user.email)
+
 
                 leave.save()
 
@@ -136,15 +139,17 @@ def apply_leave(request):
             
     return render(request, 'sanergytemplates/leave_apply.html', {"lform": form, 'requested_days': requested_days, 'department_leaves':department_leaves})
 
+
 def table (request):
     current_user = request.user
-    leaves = Leave.objects.filter(user = current_user)
+    leaves = Leave.objects.filter(user = current_user).order_by('-applying_date')
     return render(request, 'sanergytemplates/table.html',{ "leavess": leaves})
+
 
 @staff_member_required
 def hrsite(request):
-    employees=Profile.objects.filter(is_employee=True).all()
-    leaves = Leave.print_all()
+    employees=Profile.objects.filter(is_employee=True).all().order_by('joined_date')
+    leaves = Leave.print_all().order_by('applying_date')
     return render(request, 'admins/hr.html',{'employees':employees , "leavess": leaves})
 
 
@@ -183,7 +188,7 @@ def decline_leave(request,pk):
 def managersite(request):
     current_user = request.user
 
-    department_employees = Profile.objects.filter(department = current_user.profile.department).all()
+    department_employees = Profile.objects.filter(department = current_user.profile.department).all().order_by('joined_date')
     # department leaves query 
     return render (request, 'admins/manager.html', {'department_employees':department_employees})
 
@@ -191,7 +196,7 @@ def managersite(request):
 def departmental_leaves(request):
     current_user = request.user
 
-    departmental_leaves = Leave.objects.filter(user__profile__department__department_name=current_user.profile.department.department_name).all()
+    departmental_leaves = Leave.objects.filter(user__profile__department__department_name=current_user.profile.department.department_name).all().order_by('-applying_date')
 
     return render (request, 'sanergytemplates/department_employeesonleave.html', {'departmental_leaves':departmental_leaves})
 

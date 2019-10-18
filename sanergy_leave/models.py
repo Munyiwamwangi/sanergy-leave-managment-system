@@ -55,6 +55,7 @@ class Leave(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner', null=True)
     Leave_Type = models.ForeignKey(LeaveType,on_delete=models.CASCADE)
     leave_issuer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='leave_issuer', null=True)
+    applying_date = models.DateField(help_text='date of application', blank=True, null=True, default=timezone.now)
     Begin_Date = models.DateField(help_text='Leave begin date')
     End_Date = models.DateField(help_text='Leave end date')
     Requested_Days = models.PositiveIntegerField(default=0,help_text='Total no of requested leave days',blank=True,null=True)

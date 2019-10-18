@@ -3,8 +3,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.db import transaction
 
-from .models import Leave, Notice
 from users.models import Profile
+
+from .models import Leave, Notice
+
 
 class LeaveForm(forms.ModelForm):
 
@@ -17,7 +19,8 @@ class LeaveForm(forms.ModelForm):
                'datetime-input'}),
         }
 
-        exclude=['empLeave_req_id','emp_id','emp_fullname','user','leave_status','leave_issuer','Requested_Days','leave_balance']
+        exclude=['empLeave_req_id','emp_id','emp_fullname','user','leave_status','leave_issuer','Requested_Days','leave_balance','applying_date']
+
 
 
 class AddEmployeeForm(UserCreationForm):
@@ -26,6 +29,7 @@ class AddEmployeeForm(UserCreationForm):
 	class Meta:
 		model = User
 		fields = ['username','email','password1','password2']
+
 
 
 class ManagerSignUpForm(UserCreationForm):
@@ -39,3 +43,5 @@ class ManagerSignUpForm(UserCreationForm):
             user.save()
         return user
 
+class LeaveCommentForm(forms.ModelForm):
+    fields = ['Comment']
