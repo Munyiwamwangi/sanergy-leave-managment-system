@@ -51,11 +51,9 @@
                                 <th>Employee </th>
                                 <th>Begin Date</th>
                                 <th>End Date</th>
-                                <th>Requested Days</th>
+                                <th>Days</th>
                                 <th>Status </th>
                                 
-
-                                <!-- <th> Leave Type</th> -->
                                 
                             </tr>
                             {% for leave in leavess %}
@@ -66,7 +64,6 @@
                                 <td>{{leave.End_Date}}</td>
                                 <td>{{leave.Requested_Days }} </td>
                                 <td>{{leave.get_leave_status_display}}</td>
-                                
                                 
                             </tr>
                             {% endfor%}

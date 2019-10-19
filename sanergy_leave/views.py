@@ -86,51 +86,50 @@ def apply_leave(request):
                 end_date = form.cleaned_data['End_Date']
 
 
-
                 # <class 'sanergy_leave.models.LeaveType'>
-                # leave_type = form.cleaned_data['Leave_Type']
-                # print(type(leave_type.Leave_Types),'tpreeeeeeeeeeeeeeeee')
-                # leave_name = LeaveType.objects.filter(Leave_Types=leave_type.Leave_Types).first()
-                # current_user_leaves=Leave.objects.filter(user=current_user).filter(Leave_Type__Leave_Types=leave_name.Leave_Types)
-                # days=[]
+                leave_type = form.cleaned_data['Leave_Type']
+                print(type(leave_type.Leave_Types),'tpreeeeeeeeeeeeeeeee')
+                leave_name = LeaveType.objects.filter(Leave_Types=leave_type.Leave_Types).first()
+                current_user_leaves=Leave.objects.filter(user=current_user).filter(Leave_Type__Leave_Types=leave_name.Leave_Types)
+                days=[]
 
 
                 requested_days = daysHoursMinutesSecondsFromSeconds(dateDiffInSeconds(start_date, end_date))
 
 
+                for leavee in current_user_leaves:
+                    days.append(leavee.Requested_Days)
 
-                # for leave in current_user_leaves:
-                #     days.append(leave.Requested_Days)
+                total=sum(days)+int(requested_days)
+                leave_balance = (leave_name.leave_limit - total)
+                print(type(leave_name),current_user_leaves,days,total,requested_days,'totaaaaaaaaaaaaaaaaaaaaaal') 
 
-                # total=sum(days)+int(requested_days)
-                # print(type(leave_name),current_user_leaves,days,total,requested_days,'totaaaaaaaaaaaaaaaaaaaaaal') 
+                if total>leave_name.leave_limit:
+                    messages.warning(request,f'You have exceed your {leave_name.Leave_Types} limit')
+                    return redirect('apply_leave')
+                else:
 
-                # if total>leave_name.leave_limit:
-                #     messages.warning(request,f'You have exceed your {leave_name.Leave_Types} limit')
-                #     return redirect('apply_leave')
-
-
-
-                leave.Requested_Days = requested_days
-
-                name = current_user.username
-                superusers = User.objects.filter(is_superuser=True)
-                managers = User.objects.filter(is_staff=True).filter(is_superuser=False)
-                print(managers, 'manageeeeeeeeeeeeeeeeeeeeeeeeeeers')
+                    name = current_user.username
+                    superusers = User.objects.filter(is_superuser=True)
+                    managers = User.objects.filter(is_staff=True).filter(is_superuser=False)
+                    print(managers, 'manageeeeeeeeeeeeeeeeeeeeeeeeeeers')
 
 
-                for user in superusers:
-                    leave_request_sent(name,user.email)
-                for user in managers:
-                    if user.profile.department.department_name == current_user.profile.department.department_name:
-                        name = user.username
+                    for user in superusers:
                         leave_request_sent(name,user.email)
+                    for user in managers:
+                        if user.profile.department.department_name == current_user.profile.department.department_name:
+                            name = user.username
+                            leave_request_sent(name,user.email)
 
 
-                leave.save()
+                    leave.Requested_Days = requested_days
+                    leave.leave_balance=leave_balance
+                    leave.save()
 
-                return redirect('table')    
-            
+
+                    return redirect('table')    
+
 
         else:
             form = LeaveForm()
@@ -140,19 +139,21 @@ def apply_leave(request):
     return render(request, 'sanergytemplates/leave_apply.html', {"lform": form, 'requested_days': requested_days, 'department_leaves':department_leaves})
 
 
+#Individual user leaves
 def table (request):
     current_user = request.user
     leaves = Leave.objects.filter(user = current_user).order_by('-applying_date')
     return render(request, 'sanergytemplates/table.html',{ "leavess": leaves})
 
 
+#all leves to the HR
 @staff_member_required
 def hrsite(request):
     employees=Profile.objects.filter(is_employee=True).all().order_by('joined_date')
     leaves = Leave.print_all().order_by('applying_date')
     return render(request, 'admins/hr.html',{'employees':employees , "leavess": leaves})
 
-
+#leave Acceptance notification view
 @login_required
 def accept_leave(request,pk):
  
@@ -168,7 +169,7 @@ def accept_leave(request,pk):
     messages.success(request,'Leave Approval notification sent')
     return redirect('managersite')
 
-
+#notification to employee for declined leaves
 @login_required
 def decline_leave(request,pk):
     leave=Leave.objects.get(pk=pk)
@@ -192,6 +193,7 @@ def managersite(request):
     # department leaves query 
     return render (request, 'admins/manager.html', {'department_employees':department_employees})
 
+#Each departments leaves sorted here
 @login_required
 def departmental_leaves(request):
     current_user = request.user
@@ -199,4 +201,3 @@ def departmental_leaves(request):
     departmental_leaves = Leave.objects.filter(user__profile__department__department_name=current_user.profile.department.department_name).all().order_by('-applying_date')
 
     return render (request, 'sanergytemplates/department_employeesonleave.html', {'departmental_leaves':departmental_leaves})
-
